@@ -1,4 +1,4 @@
-# Copyrighth 2025 Pathway Technology, Inc.
+# Copyright 2025 Pathway Technology, Inc.
 
 import dataclasses
 import math
@@ -95,7 +95,6 @@ class BDH(nn.Module):
         self.lm_head = nn.Parameter(
             torch.zeros((D, config.vocab_size)).normal_(std=0.02)
         )
-        self.lm_gate = nn.Parameter(torch.zeros((D, 1)).normal_(std=0.02))
 
         self.apply(self._init_weights)
 
