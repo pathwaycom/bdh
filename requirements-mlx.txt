@@ -1,6 +1,0 @@
-# MLX-specific requirements for BDH training on Mac Silicon
-mlx>=0.21.0
-numpy
-datasets
-huggingface-hub
-
