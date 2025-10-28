@@ -81,7 +81,7 @@ and elsewhere in the media.
 [*Alphaxiv*](https://alphaxiv.org/abs/2509.26507),
 and [*EmergentMind*](https://emergentmind.com/papers/2509.26507).
 
-## Community Forks
+## Community Projects
 
 - [adamskrodzki/bdh](https://github.com/adamskrodzki/bdh): dynamic vocabulary, stateful attention
 - [mosure/burn_dragon_hatchling](https://github.com/mosure/burn_dragon_hatchling): Burn port
