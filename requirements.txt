@@ -1,3 +1,6 @@
-torch
-numpy
-requests
+torch>=2.0.0
+torchvision>=0.15.0
+numpy>=1.23.0
+tqdm>=4.65.0
+matplotlib>=3.6.0
+scipy>=1.9.0
