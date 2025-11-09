@@ -1,7 +1,9 @@
 # Baby Dragon Hatchling
 
 **This fork extends the original BDH architecture by integrating Continual Learning with Adaptive Synaptic Consolidation — allowing the model to learn sequences of tasks without catastrophic forgetting, inspired by biological synaptic plasticity.**
-
+```bash
+train.py --continual_learning --cl_use_consolidation --cl_use_metaplasticity --cl_lambda_ewc 1000.0 --epochs 40 --batch_size 32 --num_tasks 10
+```
 
 ## **Bridging the Gap Between Transformers and the Brain**
 
