@@ -4,7 +4,8 @@
 Based on: Zenke et al. "Continual Learning Through Synaptic Intelligence" (2017)**
 
 ```bash
-train.py --continual_learning --num_tasks 10
+train.py --continual_learning
+simple_benchmark.py --benchmark permuted_mnist --num_tasks 3 --epochs 5
 ```
 
 ***
