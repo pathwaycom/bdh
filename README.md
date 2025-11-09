@@ -1,6 +1,6 @@
 # Baby Dragon Hatchling Continual
 
-**This fork extends the original BDH architecture by integrating Continual learning with Adaptive Synaptic Consolidation, inspired by biological synaptic plasticity.**
+**This fork attempts to extend the original BDH architecture by integrating Continual learning with Adaptive Synaptic Consolidation, inspired by biological synaptic plasticity.**
 ```bash
 train.py --continual_learning --cl_use_consolidation --cl_use_metaplasticity --cl_lambda_ewc 1000.0 --epochs 40 --batch_size 32 --num_tasks 10
 ```
