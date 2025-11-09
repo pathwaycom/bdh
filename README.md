@@ -11,6 +11,7 @@ train.py --continual_learning --num_tasks 10
 
 ## Benchmarks
 Permuted MNIST
+
 <img src="figs/PERMUTED_MNIST.png" width="600"/>
 
 ***
