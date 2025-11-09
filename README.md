@@ -1,5 +1,8 @@
 # Baby Dragon Hatchling
 
+**This fork extends the original BDH architecture by integrating Continual Learning with Adaptive Synaptic Consolidation — allowing the model to learn sequences of tasks without catastrophic forgetting, inspired by biological synaptic plasticity.**
+
+
 ## **Bridging the Gap Between Transformers and the Brain**
 
 **Baby Dragon Hatchling (BDH)** is a biologically inspired large language model architecture that connects principles of deep learning with the foundations of neuroscience. Developed by researchers at [Pathway](https://pathway.com), BDH provides a theoretical and practical framework for understanding the emergence of reasoning and generalization in artificial systems.
