@@ -1,4 +1,4 @@
-# Baby Dragon Hatchling - Continual
+# Baby Dragon Hatchling - Continual Learning
 
 **This fork attempts to extend the original BDH architecture by integrating continual learning with Adaptive Synaptic Consolidation, inspired by biological synaptic plasticity.**
 
