@@ -1,3 +1,5 @@
 torch
 numpy
 requests
+pandas
+matplotlib
