@@ -83,6 +83,19 @@ pip install -r requirements.txt
 python train.py
 ```
 
+`train.py` writes a checkpoint to `bdh_checkpoint.pt` (override with `BDH_CHECKPOINT=/path/to/ckpt.pt`) alongside generating a sample at the end of training.
+
+## Interpretability Analysis
+
+`analyze.py` loads a trained checkpoint and quantifies the sparsity and selectivity of the `xy_sparse` units in each BDH layer. It reports per-layer firing-rate statistics and surfaces the most selective neurons together with the byte-context that activated them most — candidate monosemantic detectors.
+
+```bash
+python train.py          # produces bdh_checkpoint.pt + input.txt
+python analyze.py        # prints a report and writes analysis.png
+```
+
+Useful flags: `--n-batches`, `--batch-size`, `--top-n`, `--fire-threshold`. See `python analyze.py --help`. The figure output requires `matplotlib` (optional); the text report works without it.
+
 <!--For visualization and interpretability analysis, explore the example notebooks in `notebooks/`.-->
 
 

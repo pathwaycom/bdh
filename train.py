@@ -1,5 +1,6 @@
 # Copyright Pathway Technology, Inc.
 
+import dataclasses
 import os
 from contextlib import nullcontext
 
@@ -46,6 +47,10 @@ WEIGHT_DECAY = 0.1
 LOG_FREQ = 100
 
 input_file_path = os.path.join(os.path.dirname(__file__), "input.txt")
+checkpoint_path = os.environ.get(
+    "BDH_CHECKPOINT",
+    os.path.join(os.path.dirname(__file__), "bdh_checkpoint.pt"),
+)
 
 
 # Fetch the tiny Shakespeare dataset
@@ -114,7 +119,16 @@ if __name__ == "__main__":
             print(f"Step: {step}/{MAX_ITERS} loss {loss_acc.item() / loss_steps:.3}")
             loss_acc = 0
             loss_steps = 0
-    print("Training done, now generating a sample ")
+    print("Training done")
+    # Strip torch.compile's "_orig_mod." prefix so the checkpoint loads into a fresh BDH instance.
+    state_dict = {k.replace("_orig_mod.", ""): v for k, v in model.state_dict().items()}
+    torch.save(
+        {"model": state_dict, "config": dataclasses.asdict(BDH_CONFIG)},
+        checkpoint_path,
+    )
+    print(f"Saved checkpoint to {checkpoint_path}")
+
+    print("Generating a sample")
     model.eval()
     prompt = torch.tensor(
         bytearray("To be or ", "utf-8"), dtype=torch.long, device=device

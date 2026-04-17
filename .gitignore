@@ -1,1 +1,4 @@
 input.txt
+__pycache__/
+*.pt
+analysis.png
