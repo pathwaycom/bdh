@@ -1,0 +1,14 @@
+# GPU-enabled image (CUDA runtime)
+FROM pytorch/pytorch:2.1.0-cuda11.8-cudnn8-runtime
+
+WORKDIR /app
+
+# Install dependencies
+COPY requirements.txt /app/requirements.txt
+RUN pip install --no-cache-dir -r /app/requirements.txt
+
+# Copy project files
+COPY . /app
+
+# Default command: show help
+CMD ["python", "main.py", "--help"]
