@@ -6,6 +6,7 @@ import math
 import torch
 import torch.nn.functional as F
 from torch import nn
+from torch.utils.checkpoint import checkpoint
 
 
 @dataclasses.dataclass
@@ -16,6 +17,7 @@ class BDHConfig:
     n_head: int = 4
     mlp_internal_dim_multiplier: int = 128
     vocab_size: int = 256
+    checkpoint_layers: bool = False
 
 
 def get_freqs(n, theta, dtype):
@@ -106,43 +108,51 @@ class BDH(nn.Module):
         elif isinstance(module, nn.Embedding):
             nn.init.normal_(module.weight, mean=0.0, std=0.02)
 
+    def _layer(self, x):
+        C = self.config
+        B, _, T, _ = x.size()
+
+        x_latent = x @ self.encoder
+
+        x_sparse = F.relu(x_latent)  # B, nh, T, N
+
+        yKV = self.attn(
+            Q=x_sparse,
+            K=x_sparse,
+            V=x,
+        )
+        yKV = self.ln(yKV)
+
+        y_latent = yKV @ self.encoder_v
+        y_sparse = F.relu(y_latent)
+        xy_sparse = x_sparse * y_sparse  # B, nh, T, N
+
+        xy_sparse = self.drop(xy_sparse)
+
+        N = xy_sparse.size(-1)
+        yMLP = (
+            xy_sparse.transpose(1, 2).reshape(B, 1, T, N * C.n_head) @ self.decoder
+        )  # B, 1, T, D
+        y = self.ln(yMLP)
+        return self.ln(x + y)
+
     def forward(self, idx, targets=None):
         C = self.config
 
         B, T = idx.size()
         D = C.n_embd
-        nh = C.n_head
-        N = D * C.mlp_internal_dim_multiplier // nh
 
         x = self.embed(idx).unsqueeze(1)
 
         # actually helps with training
         x = self.ln(x)  # B, 1, T, D
 
-        for level in range(C.n_layer):
-            x_latent = x @ self.encoder
-
-            x_sparse = F.relu(x_latent)  # B, nh, T, N
-
-            yKV = self.attn(
-                Q=x_sparse,
-                K=x_sparse,
-                V=x,
-            )
-            yKV = self.ln(yKV)
-
-            y_latent = yKV @ self.encoder_v
-            y_sparse = F.relu(y_latent)
-            xy_sparse = x_sparse * y_sparse  # B, nh, T, N
-
-            xy_sparse = self.drop(xy_sparse)
-
-            yMLP = (
-                xy_sparse.transpose(1, 2).reshape(B, 1, T, N * nh) @ self.decoder
-            )  # B, 1, T, D
-            y = self.ln(yMLP)
-            x = self.ln(x + y)
-
+        for _ in range(C.n_layer):
+            if C.checkpoint_layers and self.training:
+                x = checkpoint(self._layer, x, use_reentrant=False)
+            else:
+                x = self._layer(x)
+                
         logits = x.view(B, T, D) @ self.lm_head
         loss = None
         if targets is not None:
