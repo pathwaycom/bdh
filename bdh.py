@@ -29,6 +29,37 @@ def get_freqs(n, theta, dtype):
     )
 
 
+def extend_freqs(freqs: torch.Tensor, n_new: int, theta: float = 2 ** 16) -> torch.Tensor:
+    """Extend a RoPE frequency table to cover ``n_new`` latent neurons.
+
+    Frequencies are exponent-normalized by the neuron count (``theta ** (-i / n)``),
+    so recomputing ``get_freqs(n_new)`` after growing the latent width would silently
+    change the phases of every existing neuron and corrupt the model. This helper
+    keeps the existing table verbatim and appends entries for the new neurons at the
+    new scale, making width growth phase-preserving for all pre-existing neurons.
+
+    Args:
+        freqs: existing frequency tensor whose last dimension is ``n_old``.
+        n_new: total neuron count after growth (``n_new >= n_old``).
+
+    Returns:
+        Tensor with the same leading shape as ``freqs`` and last dimension ``n_new``.
+
+    Example:
+        >>> f = get_freqs(64, theta=2**16, dtype=torch.float32)
+        >>> extend_freqs(f, 96)[-32:]      # only the new neurons are new
+    """
+    flat = freqs.reshape(-1)
+    n_old = flat.numel()
+    if n_new < n_old:
+        raise ValueError(f"cannot shrink frequencies from {n_old} to {n_new}")
+    idx = torch.arange(n_old, n_new, dtype=flat.dtype, device=flat.device)
+    q = 2
+    appended = 1.0 / (theta ** (((idx / q).floor() * q) / n_new)) / (2 * math.pi)
+    out = torch.cat([flat, appended.to(flat.dtype)])
+    return out.reshape(freqs.shape[:-1] + (n_new,))
+
+
 class Attention(torch.nn.Module):
     def __init__(self, config):
         super().__init__()
